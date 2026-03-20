@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - TaskMaster</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f9fc;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --accent: #667eea;
+            --accent-dark: #5a67d8;
+            --error: #e74c3c;
+            --success: #27ae60;
+            --border: #e2e8f0;
+        }
+        
+        [data-theme="dark"] {
+            --bg-primary: #1a202c;
+            --bg-secondary: #2d3748;
+            --text-primary: #f7fafc;
+            --text-secondary: #cbd5e0;
+            --border: #4a5568;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .navbar {
+            background: var(--bg-secondary);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+        
+        .theme-toggle {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .container {
+            min-height: calc(100vh - 140px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .register-card {
+            background: var(--bg-secondary);
+            padding: 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid var(--border);
+        }
+        
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        
+        select {
+            cursor: pointer;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: var(--accent-dark);
+            transform: translateY(-2px);
+        }
+        
+        .message {
+            text-align: center;
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+        }
+        
+        .error {
+            color: var(--error);
+            background: rgba(231, 76, 60, 0.1);
+        }
+        
+        .success {
+            color: var(--success);
+            background: rgba(39, 174, 96, 0.1);
+        }
+        
+        .link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        
+        .link a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">📝 TaskMaster</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="login.html">Login</a>
+                <a href="register.html">Register</a>
+                <button class="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="register-card">
+            <h2>Create Your Account 🚀</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Username *</label>
+                    <input type="text" id="username" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="role">
+                        <option value="user">Regular User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" id="password" placeholder="Create a strong password" required>
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password *</label>
+                    <input type="password" id="confirm_password" placeholder="Confirm your password" required>
+                </div>
+                <button type="submit">Register</button>
+            </form>
+            <div id="message" class="message"></div>
+            <div class="link">
+                Already have an account? <a href="login.html">Login here</a>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>© 2024 TaskMaster - Start Your Productivity Journey Today!</p>
+    </footer>
+    
+    <script>
+        // Theme management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+        
+        initTheme();
+        
+        // Password validation function
+        function validatePassword(password) {
+            const minLength = 8;
+            if (password.length < minLength) {
+                return 'Password must be at least 8 characters long';
+            }
+            return null;
+        }
+        
+        // Registration form handling
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const role = document.getElementById('role').value;
+            const password = document.getElementById('password').value;
+            const confirm_password = document.getElementById('confirm_password').value;
+            const messageDiv = document.getElementById('message');
+            
+            // Client-side validation
+            if (!username || !email || !password || !confirm_password) {
+                messageDiv.textContent = 'Please fill in all required fields';
+                messageDiv.className = 'message error';
+                return;
+            }
+            
+            const passwordError = validatePassword(password);
+            if (passwordError) {
+                messageDiv.textContent = passwordError;
+                messageDiv.className = 'message error';
+                return;
+            }
+            
+            if (password !== confirm_password) {
+                messageDiv.textContent = 'Passwords do not match';
+                messageDiv.className = 'message error';
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/auth/register/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, email, role, password, confirm_password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messageDiv.textContent = 'Registration successful! Redirecting to login...';
+                    messageDiv.className = 'message success';
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    let errorMessage = '';
+                    if (typeof data === 'object') {
+                        errorMessage = Object.values(data).flat().join(', ');
+                    } else {
+                        errorMessage = data.message || 'Registration failed';
+                    }
+                    messageDiv.textContent = errorMessage;
+                    messageDiv.className = 'message error';
+                }
+            } catch (error) {
+                messageDiv.textContent = 'Connection error. Make sure the server is running!';
+                messageDiv.className = 'message error';
+            }
+        });
+    </script>
+</body>
+</html>

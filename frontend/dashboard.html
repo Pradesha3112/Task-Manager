@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - TaskMaster</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f9fc;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --accent: #667eea;
+            --accent-dark: #5a67d8;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --pending: #ffc107;
+            --in-progress: #17a2b8;
+            --completed: #28a745;
+        }
+        
+        [data-theme="dark"] {
+            --bg-primary: #1a202c;
+            --bg-secondary: #2d3748;
+            --text-primary: #f7fafc;
+            --text-secondary: #cbd5e0;
+            --card-bg: #2d3748;
+            --border: #4a5568;
+            --pending: #f39c12;
+            --in-progress: #00bcd4;
+            --completed: #2ecc71;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: var(--bg-secondary);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .user-name {
+            font-weight: bold;
+        }
+        
+        .role-badge {
+            background: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            color: white;
+        }
+        
+        .theme-toggle, .logout-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        /* Add Task Card */
+        .add-task-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
+        
+        .add-task-card h3 {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: var(--accent-dark);
+            transform: translateY(-2px);
+        }
+        
+        /* Tasks Grid */
+        .tasks-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .task-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--accent);
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+        
+        .task-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .task-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .task-description {
+            color: var(--text-secondary);
+            margin: 0.5rem 0;
+        }
+        
+        .task-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 0.5rem 0;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .due-date {
+            background: var(--bg-secondary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+        }
+        
+        .due-date-overdue {
+            background: #dc3545;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+        }
+        
+        .task-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        
+        .status-pending {
+            background: var(--pending);
+            color: #000;
+        }
+        
+        .status-in_progress {
+            background: var(--in-progress);
+            color: white;
+        }
+        
+        .status-completed {
+            background: var(--completed);
+            color: white;
+        }
+        
+        .task-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .status-update {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 5px;
+        }
+        
+        .edit-btn {
+            background: var(--pending);
+            color: #000;
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+        
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+            }
+            
+            .task-header {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">📝 TaskMaster</a>
+            <div class="user-info">
+                <span class="user-name" id="userName"></span>
+                <span id="userRole" class="role-badge"></span>
+                <button class="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="add-task-card">
+            <h3>➕ Add New Task</h3>
+            <form id="taskForm">
+                <div class="form-group">
+                    <input type="text" id="title" placeholder="Task Title" required>
+                </div>
+                <div class="form-group">
+                    <textarea id="description" placeholder="Task Description"></textarea>
+                </div>
+                <div class="form-group">
+                    <input type="date" id="due_date" placeholder="Due Date">
+                </div>
+                <div class="form-group">
+                    <select id="status">
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+        
+        <div id="tasksContainer" class="tasks-grid">
+            <div class="empty-state">Loading tasks...</div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let allTasks = []; // Store all tasks for sorting
+        
+        // Check if user is logged in
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+        
+        // Get user data
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            currentUser = JSON.parse(userData);
+            document.getElementById('userName').textContent = currentUser.username;
+            document.getElementById('userRole').textContent = currentUser.role;
+        }
+        
+        // Theme management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+        
+        initTheme();
+        
+        // Load tasks on page load
+        loadTasks();
+        
+        async function loadTasks() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/tasks/', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    }
+                });
+                
+                if (response.status === 401) {
+                    const refreshed = await refreshToken();
+                    if (refreshed) {
+                        loadTasks();
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                    return;
+                }
+                
+                allTasks = await response.json();
+                sortAndDisplayTasks();
+            } catch (error) {
+                document.getElementById('tasksContainer').innerHTML = '<div class="empty-state">Error loading tasks. Make sure server is running!</div>';
+            }
+        }
+        
+        // Sort tasks by due date (nearest first)
+        function sortTasksByDueDate(tasks) {
+            return tasks.sort((a, b) => {
+                // If no due date, put at the end
+                if (!a.due_date && !b.due_date) return 0;
+                if (!a.due_date) return 1;
+                if (!b.due_date) return -1;
+                
+                // Compare dates
+                return new Date(a.due_date) - new Date(b.due_date);
+            });
+        }
+        
+        // Sort and display tasks
+        function sortAndDisplayTasks() {
+            const sortedTasks = sortTasksByDueDate([...allTasks]);
+            displayTasks(sortedTasks);
+        }
+        
+        // Update single task in the local array
+        function updateTaskInArray(taskId, updatedTask) {
+            const index = allTasks.findIndex(t => t.id === taskId);
+            if (index !== -1) {
+                allTasks[index] = updatedTask;
+            }
+        }
+        
+        async function refreshToken() {
+            try {
+                const refresh = localStorage.getItem('refresh_token');
+                const response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ refresh })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('access_token', data.access);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        }
+        
+        function displayTasks(tasks) {
+            if (tasks.length === 0) {
+                document.getElementById('tasksContainer').innerHTML = '<div class="empty-state">✨ No tasks yet. Create your first task above!</div>';
+                return;
+            }
+            
+            const container = document.getElementById('tasksContainer');
+            container.innerHTML = '';
+            
+            tasks.forEach(task => {
+                const taskCard = createTaskCard(task);
+                container.appendChild(taskCard);
+            });
+        }
+        
+        function createTaskCard(task) {
+            const taskCard = document.createElement('div');
+            taskCard.className = 'task-card';
+            taskCard.id = `task-${task.id}`;
+            
+            const statusClass = `status-${task.status}`;
+            const statusText = getStatusText(task.status);
+            
+            // Format due date with styling if overdue
+            let dueDateHtml = '';
+            if (task.due_date) {
+                const isOverdue = isTaskOverdue(task.due_date, task.status);
+                const dueClass = isOverdue ? 'due-date-overdue' : 'due-date';
+                dueDateHtml = `<span class="${dueClass}">📅 Due: ${task.due_date}</span>`;
+            }
+            
+            taskCard.innerHTML = `
+                <div class="task-header">
+                    <div class="task-title">${escapeHtml(task.title)}</div>
+                    <span id="status-badge-${task.id}" class="task-status ${statusClass}">${statusText}</span>
+                </div>
+                <div class="task-description">${escapeHtml(task.description) || 'No description'}</div>
+                <div class="task-meta">
+                    <span>👤 ${task.created_by_username}</span>
+                    <span>📅 Created: ${new Date(task.created_at).toLocaleDateString()}</span>
+                    ${dueDateHtml}
+                </div>
+                <div class="task-actions">
+                    <select id="status-select-${task.id}" onchange="updateStatus(${task.id}, this.value)" class="status-update">
+                        <option value="pending" ${task.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+                        <option value="in_progress" ${task.status === 'in_progress' ? 'selected' : ''}>🔄 In Progress</option>
+                        <option value="completed" ${task.status === 'completed' ? 'selected' : ''}>✅ Completed</option>
+                    </select>
+                    <button class="edit-btn" onclick="editTask(${task.id})">✏️ Edit</button>
+                    <button class="delete-btn" onclick="deleteTask(${task.id})">🗑️ Delete</button>
+                </div>
+            `;
+            
+            return taskCard;
+        }
+        
+        function getStatusText(status) {
+            switch(status) {
+                case 'pending': return 'PENDING';
+                case 'in_progress': return 'IN PROGRESS';
+                case 'completed': return 'COMPLETED';
+                default: return status.toUpperCase();
+            }
+        }
+        
+        function isTaskOverdue(dueDate, status) {
+            if (status === 'completed') return false;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const due = new Date(dueDate);
+            return due < today;
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const due_date = document.getElementById('due_date').value;
+            const status = document.getElementById('status').value;
+            
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/tasks/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    },
+                    body: JSON.stringify({ title, description, due_date, status })
+                });
+                
+                if (response.ok) {
+                    const newTask = await response.json();
+                    allTasks.push(newTask);
+                    sortAndDisplayTasks();
+                    document.getElementById('taskForm').reset();
+                } else {
+                    const error = await response.json();
+                    alert('Failed to create task: ' + JSON.stringify(error));
+                }
+            } catch (error) {
+                alert('Error creating task');
+            }
+        });
+        
+        async function updateStatus(taskId, newStatus) {
+            try {
+                // First, get the current task data
+                const response = await fetch(`http://127.0.0.1:8000/api/tasks/${taskId}/`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    }
+                });
+                
+                const task = await response.json();
+                
+                // Update only the status, keep everything else the same
+                const updateResponse = await fetch(`http://127.0.0.1:8000/api/tasks/${taskId}/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    },
+                    body: JSON.stringify({
+                        title: task.title,
+                        description: task.description,
+                        status: newStatus,
+                        due_date: task.due_date
+                    })
+                });
+                
+                if (updateResponse.ok) {
+                    const updatedTask = await updateResponse.json();
+                    
+                    // Update task in local array
+                    updateTaskInArray(taskId, updatedTask);
+                    
+                    // Update the status badge in the header
+                    const statusBadge = document.getElementById(`status-badge-${taskId}`);
+                    if (statusBadge) {
+                        const newStatusClass = `task-status status-${newStatus}`;
+                        const newStatusText = getStatusText(newStatus);
+                        statusBadge.className = newStatusClass;
+                        statusBadge.textContent = newStatusText;
+                    }
+                    
+                    // Update the dropdown to reflect new status
+                    const statusSelect = document.getElementById(`status-select-${taskId}`);
+                    if (statusSelect) {
+                        statusSelect.value = newStatus;
+                    }
+                    
+                    // Re-sort and display to update due date colors
+                    sortAndDisplayTasks();
+                } else {
+                    const error = await updateResponse.json();
+                    alert('Failed to update status: ' + JSON.stringify(error));
+                }
+            } catch (error) {
+                alert('Error updating status: ' + error.message);
+            }
+        }
+        
+        async function deleteTask(taskId) {
+            if (!confirm('Are you sure you want to delete this task?')) return;
+            
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/tasks/${taskId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    // Remove task from local array
+                    allTasks = allTasks.filter(t => t.id !== taskId);
+                    sortAndDisplayTasks();
+                } else {
+                    alert('Failed to delete task');
+                }
+            } catch (error) {
+                alert('Error deleting task');
+            }
+        }
+        
+        async function editTask(taskId) {
+            try {
+                // First, get current task data
+                const response = await fetch(`http://127.0.0.1:8000/api/tasks/${taskId}/`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    }
+                });
+                
+                const currentTask = await response.json();
+                
+                const newTitle = prompt('Enter new title:', currentTask.title);
+                if (!newTitle) return;
+                
+                const newDescription = prompt('Enter new description:', currentTask.description);
+                const newDueDate = prompt('Enter new due date (YYYY-MM-DD):', currentTask.due_date || '');
+                
+                const updateData = { 
+                    title: newTitle,
+                    description: newDescription || '',
+                    status: currentTask.status, // Keep current status
+                    due_date: newDueDate || null
+                };
+                
+                const updateResponse = await fetch(`http://127.0.0.1:8000/api/tasks/${taskId}/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                if (updateResponse.ok) {
+                    const updatedTask = await updateResponse.json();
+                    updateTaskInArray(taskId, updatedTask);
+                    sortAndDisplayTasks();
+                } else {
+                    const error = await updateResponse.json();
+                    alert('Failed to update task: ' + JSON.stringify(error));
+                }
+            } catch (error) {
+                alert('Error updating task: ' + error.message);
+            }
+        }
+        
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
